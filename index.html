@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Socket IO</title>
+
+</head>
+<body>
+
+<form id="user-detail-form">
+	Name : <input type="text" id="user-name"/>
+	<br/>
+	Email : <input type="email" id="user-email"/>
+	<button id="enter-site" type="button">Enter Our Site</button>
+</form>
+<div id="other-content" style="display: none">
+	<div id="user-list"></div>
+	<div id="user-chats"></div>
+	<form id="chat-form" style="display:none">
+		<input type="text" id="user-input">
+		<button type="button" id="send-info">Send Info</button>
+	</form>
+</div>
+
+
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+	var socket = io.connect('/');
+	$("form").submit(function(){return false;});
+
+	socket.on("reply", function (data) {
+		$("#server-reply").append("<div>" + data.data + "</div>")
+	});
+	var userList = [];
+	socket.on("authenticated", function(data){
+		$("#other-content").css("display", "block");
+		$("#user-detail-form").css("display", "none");
+		userList = data.data;
+		userList.forEach(function(record){
+			$("#user-list").append("<div class='friend'><button data-email="+record.email+">"
+				+ record.name+"</button></div>");
+		});
+		$("#user-list").find("button").click(newChatCallback)
+	});
+
+	socket.on("new-message", function(data){
+		$("#user-chats").append(
+			"<div class='new-message'><div class='from'>"+data.from
+				+"</div><div class='message'>"+data.message+"</div></div>")
+	});
+
+	function newChatCallback(evt){
+		var button  = $(this);
+		$("#user-list").css("display", "none");
+		$("#chat-form").css("display", "block").attr("data-friend-email", button.attr("data-email"));
+	}
+
+	$("#enter-site").click(function(evt){
+		var userInfo = {
+			name: $("#user-name").val(),
+			email:$("#user-email").val()
+		};
+		socket.emit("new-user", userInfo);
+	});
+
+	$("#send-info").click(function () {
+		var text = $("#user-input").val().trim();
+		if (text && text.length > 0) {
+			socket.emit("new-chat", {message: text, "friend-email":$("#chat-form").attr("data-friend-email")});
+		}
+	});
+</script>
+
+</body>
+</html>

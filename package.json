@@ -1,0 +1,15 @@
+{
+  "name": "SocketIO",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Prakash Kumar Chakka <prakash@noplug.in> (http://www.noplug.in/)",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.11.2",
+    "socket.io": "^1.3.3"
+  }
+}
