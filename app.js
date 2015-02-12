@@ -57,4 +57,5 @@ io.on("connection", function (socket) {
 });
 
 console.log("Starting server");
-http.listen(3300);
+var port = process.env.PORT || 3300;
+http.listen(port);
